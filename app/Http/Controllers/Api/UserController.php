@@ -57,6 +57,16 @@ class UserController extends Controller
     }
 
     /**
+     * トークンの無効化
+     */
+    public function deleteToken(Request $req)
+    {
+        $req->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'success']);
+    }
+
+    /**
      * ユーザー情報アップデート
      */
     public function update(Request $req)

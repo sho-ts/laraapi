@@ -15,7 +15,8 @@ use App\Http\Controllers\Api\UserController;
 |
 */
 
-Route::post('/user/register', [UserController::class, 'register']);
+Route::post('/user', [UserController::class, 'register']);
 Route::post('/user/authenticate', [UserController::class, 'authenticate']);
 Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'read']);
-Route::middleware('auth:sanctum')->put('/user/update', [UserController::class, 'update']);
+Route::middleware('auth:sanctum')->put('/user', [UserController::class, 'update']);
+Route::middleware('auth:sanctum')->get('/user/deltoken', [UserController::class, 'deleteToken']);
