@@ -25,10 +25,10 @@ class UserController extends Controller
 
         // バリデーション
         $isValid = $req->validate([
-            'name' => ['required'],
+            'name' => ['required', 'max:32'],
             'phone_number' => ['required', 'numeric', 'digits_between:8,11'],
             'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required'],
+            'password' => ['required', 'min:8'],
         ]);
 
         if ($isValid) {
@@ -76,9 +76,10 @@ class UserController extends Controller
 
         // バリデーション
         $isValid = $req->validate([
-            'name' => ['required'],
+            'name' => ['required', 'max:32'],
             'phone_number' => ['required', 'numeric', 'digits_between:8,11'],
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'password' => ['min:8'],
         ]);
 
         if ($isValid) {
