@@ -88,6 +88,20 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * ユーザー情報を削除
+     */
+    public function delete(Request $req)
+    {
+        $user = User::find($req->user()->id);
+        $user->delete();
+
+        return response()->json(['message' => 'success']);
+    }
+
+    /**
+     * ユーザー情報を取得
+     */
     public function read(Request $req)
     {
         $user = User::find($req->user()->id);
