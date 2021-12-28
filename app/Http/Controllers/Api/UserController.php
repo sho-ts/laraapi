@@ -17,14 +17,25 @@ class UserController extends Controller
     /**
      * ユーザー作成
      */
-    public function register(Request $req) {
+    public function register(Request $req)
+    {
         $data = $req->all();
 
-        // パスワードを暗号化
-        $data['password'] = Hash::make($data['password']);
+        // バリデーション
+        $isValid = $req->validate([
+            'name' => ['required'],
+            'phone_number' => ['required', 'numeric', 'digits_between:8,11'],
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-        $this->userRepository->register($data);
+        if ($isValid) {
+            // パスワードを暗号化
+            $data['password'] = Hash::make($data['password']);
 
-        return response()->json($data);
+            $this->userRepository->register($data);
+
+            return response()->json($data);
+        }
     }
 }
