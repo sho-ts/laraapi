@@ -85,7 +85,11 @@ class UserController extends Controller
         if ($isValid) {
             $this->userRepository->update($user, $data);
 
-            return response()->json($data);
+            return response()->json([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phoneNumber' => $data['phone_number'],
+            ]);
         }
     }
 
