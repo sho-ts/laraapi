@@ -39,4 +39,18 @@ class UserController extends Controller
             return response()->json(['api_token' => $token->plainTextToken], 200);
         }
     }
+
+    /**
+     * apiトークン発行
+     */
+    public function authenticate(Request $req)
+    {
+        $data = $req->all();
+
+        if (Auth::attempt($data)) {
+            $token = $req->user()->createToken('token-name');
+
+            return response()->json(['api_token' => $token->plainTextToken], 200);
+        }
+    }
 }
