@@ -20,4 +20,11 @@ class UserRepository implements UserRepositoryInterface
 
         $this->user->create($data);
     }
+
+    public function update(User $user, array $data)
+    {
+        $data['password'] = Hash::make($data['password']);
+
+        $user->fill($data)->save();
+    }
 }

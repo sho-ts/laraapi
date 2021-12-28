@@ -2,6 +2,10 @@
 
 namespace App\Repositories\User;
 
-interface UserRepositoryInterface {
+use App\Models\User;
+
+interface UserRepositoryInterface
+{
     public function register(array $data);
+    public function update(User $user, array $data);
 }
