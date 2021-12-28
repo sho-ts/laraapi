@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Repositories\User\UserRepository;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -25,17 +25,18 @@ class UserController extends Controller
         $isValid = $req->validate([
             'name' => ['required'],
             'phone_number' => ['required', 'numeric', 'digits_between:8,11'],
-            'email' => ['required', 'email'],
+            'email' => ['required', 'email', 'unique:users'],
             'password' => ['required'],
         ]);
 
         if ($isValid) {
-            // パスワードを暗号化
-            $data['password'] = Hash::make($data['password']);
-
             $this->userRepository->register($data);
 
-            return response()->json($data);
+            // 登録したユーザーでログインする
+            Auth::attempt($data);
+            $token = $req->user()->createToken('token-name');
+
+            return response()->json(['api_token' => $token->plainTextToken], 200);
         }
     }
 }
