@@ -77,4 +77,15 @@ class UserController extends Controller
             return response()->json($data);
         }
     }
+
+    public function read(Request $req)
+    {
+        $user = User::find($req->user()->id);
+
+        return response()->json([
+            'name' => $user->name,
+            'email' => $user->email,
+            'phoneNumber' => $user->phone_number,
+        ]);
+    }
 }
