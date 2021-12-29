@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Trait\ValidationTrait;
 use App\Repositories\User\UserRepository;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    use ValidationTrait;
+
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
@@ -24,22 +27,15 @@ class UserController extends Controller
         $data = $req->all();
 
         // バリデーション
-        $isValid = $req->validate([
-            'name' => ['required', 'max:32'],
-            'phone_number' => ['required', 'numeric', 'digits_between:8,11'],
-            'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required', 'min:8'],
-        ]);
+        $this->userValidation($req);
 
-        if ($isValid) {
-            $this->userRepository->register($data);
+        $this->userRepository->register($data);
 
-            // 登録したユーザーでログインする
-            Auth::attempt($data);
-            $token = $req->user()->createToken('token-name');
+        // 登録したユーザーでログインする
+        Auth::attempt($data);
+        $token = $req->user()->createToken('token-name');
 
-            return response()->json(['api_token' => $token->plainTextToken], 200);
-        }
+        return response()->json(['api_token' => $token->plainTextToken], 200);
     }
 
     /**
@@ -47,9 +43,7 @@ class UserController extends Controller
      */
     public function authenticate(Request $req)
     {
-        $data = $req->all();
-
-        if (Auth::attempt($data)) {
+        if (Auth::attempt($req->all())) {
             $token = $req->user()->createToken('token-name');
 
             return response()->json(['api_token' => $token->plainTextToken], 200);
@@ -75,22 +69,18 @@ class UserController extends Controller
         $user = User::find($req->user()->id);
 
         // バリデーション
-        $isValid = $req->validate([
-            'name' => ['required', 'max:32'],
-            'phone_number' => ['required', 'numeric', 'digits_between:8,11'],
+        $this->userValidation($req, [
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => ['min:8'],
         ]);
 
-        if ($isValid) {
-            $this->userRepository->update($user, $data);
+        $this->userRepository->update($user, $data);
 
-            return response()->json([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'phoneNumber' => $data['phone_number'],
-            ]);
-        }
+        return response()->json([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phoneNumber' => $data['phone_number'],
+        ]);
     }
 
     /**
